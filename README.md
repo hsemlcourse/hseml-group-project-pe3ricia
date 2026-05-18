@@ -1,5 +1,5 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kOqwghv0)
-# ML Project — [Название проекта]
+# ML Project — Laundered Funds Amount Prediction
 
 **Студент:** Коновченко Пётр Михайлович
 
@@ -20,7 +20,7 @@
 
 <!-- Кратко опишите задачу: что предсказываем, какой датасет, метрика качества -->
 
-**Задача:** Регрессия
+**Задача:** Регрессия. Предсказываем сумму перевода по признакам транзакции
 
 **Датасет:** Global Black Money Transactions Dataset с Kaggle
 
@@ -33,7 +33,11 @@
 .
 ├── data
 │   ├── processed               # Очищенные и обработанные данные
+│   │   ├── test.csv
+│   │   ├── train.csv
+│   │   └── valid.csv
 │   └── raw                     # Исходные файлы
+│       └── black_money_transactions.csv
 ├── models                      # Сохранённые модели 
 ├── notebooks
 │   ├── 01_eda.ipynb            # EDA
