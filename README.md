@@ -39,19 +39,16 @@
 │   └── raw                     # Исходные файлы
 │       └── black_money_transactions.csv
 ├── models                      # Сохранённые модели 
+│       └── baseline_linear_regression.pkl
 ├── notebooks
 │   ├── 01_eda.ipynb            # EDA
-│   ├── 02_baseline.ipynb       # Baseline-модель
-│   └── 03_experiments.ipynb    # Эксперименты и ablation study
+│   └── 02_baseline.ipynb       # Baseline-модель
 ├── presentation                # Презентация для защиты
 ├── report
-│   ├── images                  # Изображения для отчёта
-│   └── report.md               # Финальный отчёт
 ├── src
 │   ├── preprocessing.py        # Предобработка данных
-│   └── modeling.py             # Обучение и оценка моделей
+│   └── modeling.py             # Обучение и оценка базовой модели
 ├── tests
-│   └── test.py                 # Тесты пайплайна
 ├── requirements.txt
 └── README.md
 ```
