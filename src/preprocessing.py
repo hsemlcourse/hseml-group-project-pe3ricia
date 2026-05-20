@@ -1,8 +1,9 @@
+import random
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import random
 
 RANDOM_STATE = 42
 
@@ -39,7 +40,8 @@ def basic_cleaning(df: pd.DataFrame) -> pd.DataFrame:
         .str.strip()
         .str.lower()
     )
-    df["has_tax_haven"] = (~tax_haven_normalized.isin(["none", "no", "nan", "null", ""])).astype(int)
+    nos = ["none", "no", "nan", "null", ""]
+    df["has_tax_haven"] = (~tax_haven_normalized.isin(nos)).astype(int)
 
     df["log_amount"] = np.log1p(df["Amount (USD)"])
 
