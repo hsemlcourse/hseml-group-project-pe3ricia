@@ -1,9 +1,13 @@
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import random
 
+RANDOM_STATE = 42
+
+random.seed(RANDOM_STATE)
+np.random.seed(RANDOM_STATE)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RAW_PATH = BASE_DIR / "data" / "raw" / "black_money_transactions.csv"
