@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  preprocess:
+    build: .
+    command: python -m src.preprocessing
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+
+  eda:
+    build: .
+    command: python -m src.eda
+    volumes:
+      - ./data:/app/data
+      - ./report:/app/report
+
+  baseline:
+    build: .
+    command: python -m src.baseline
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+
+  experiments:
+    build: .
+    command: python -m src.experiments
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+
+  train:
+    build: .
+    command: python -m src.train
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models

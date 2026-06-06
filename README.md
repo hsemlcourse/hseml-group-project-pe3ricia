@@ -1,60 +1,67 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kOqwghv0)
-# ML Project — [Название проекта]
+# ML Project — AML Risk Score Classification
 
-**Студент:** [ФИО / Student ID]
-
-**Группа:** [Группа]
+**Студент:** Коновченко Петр Михайлович  
+**Группа:** БИВ236
 
 
 ## Оглавление
 
 1. [Описание задачи](#описание-задачи)
 2. [Структура репозитория](#структура-репозитория)
-3. [Запуски](#быстрый-старт)
-4. [Данные](#данные)
-5. [Результаты](#результаты)
+3. [Быстрый старт](#быстрый-старт)
+4. [Запуск через Docker](#запуск-через-docker)
+5. [Данные](#данные)
+6. [Результаты](#результаты)
 7. [Отчёт](#отчёт)
 
 
 ## Описание задачи
 
-<!-- Кратко опишите задачу: что предсказываем, какой датасет, метрика качества -->
+**Задача:** многоклассовая классификация (10 классов)
 
-**Задача:** [Классификация / Регрессия / Кластеризация / ...]
+**Датасет:** [Global Black Money Transactions Dataset](https://www.kaggle.com/) — 10 000 транзакций, 14 признаков
 
-**Датасет:** [Название и источник датасета]
+**Целевая переменная:** `Money Laundering Risk Score` — уровень риска отмывания денег (1–10)
 
-**Целевая метрика:** [Accuracy / F1 / RMSE / ...]
+**Основная метрика:** weighted F1-score
 
 
 ## Структура репозитория
-Опишите структуру проекта, сохранив при этом верхнеуровневые папки. Можно добавить новые при необходимости.
+
 ```
 .
 ├── data
-│   ├── processed               # Очищенные и обработанные данные
-│   └── raw                     # Исходные файлы
-├── models                      # Сохранённые модели 
+│   ├── raw/                        # Исходный CSV (black_money_transactions.csv)
+│   └── processed/                  # train/valid/test в форматах .csv и .pkl
+├── models/                         # Сохранённые модели (.pkl) и таблица экспериментов
 ├── notebooks
-│   ├── 01_eda.ipynb            # EDA
-│   ├── 02_baseline.ipynb       # Baseline-модель
-│   └── 03_experiments.ipynb    # Эксперименты и ablation study
-├── presentation                # Презентация для защиты
+│   ├── EDA_risk.ipynb              # Разведочный анализ данных
+│   ├── baseline_risk.ipynb         # Baseline-модель
+│   └── experiments_risk.ipynb      # Эксперименты с моделями
+├── presentation/                   # Презентация для защиты
 ├── report
-│   ├── images                  # Изображения для отчёта
-│   └── report.md               # Финальный отчёт
+│   ├── *.png                       # Графики EDA
+│   └── report.md                   # Финальный отчёт
 ├── src
-│   ├── preprocessing.py        # Предобработка данных
-│   └── modeling.py             # Обучение и оценка моделей
-├── tests
-│   └── test.py                 # Тесты пайплайна
+│   ├── config.py                   # Пути, seed, списки признаков
+│   ├── preprocessing.py            # Feature engineering + разбивка данных
+│   ├── eda.py                      # EDA-графики и статистики
+│   ├── baseline.py                 # Baseline LogisticRegression
+│   ├── experiments.py              # Grid-search по 4 моделям
+│   └── train.py                    # Финальная модель (train+val → test)
+├── tests/
+│   └── test.py                     # Тесты пайплайна
+├── Dockerfile
+├── docker-compose.yml
+├── pyproject.toml                  # Конфиг ruff
 ├── requirements.txt
 └── README.md
 ```
 
-## Запуск
 
-Этот блок замените способом запуска вашего сервиса.
+## Быстрый старт
+
 ```bash
 # 1. Клонировать репозиторий
 git clone <url>
@@ -62,24 +69,63 @@ cd <repo-name>
 
 # 2. Создать виртуальное окружение
 python -m venv .venv
-source .venv/bin/activate   # Linux/macOS
-# .venv\Scripts\activate    # Windows
+source .venv/bin/activate      # Linux/macOS
+# .venv\Scripts\activate       # Windows
 
 # 3. Установить зависимости
 pip install -r requirements.txt
+
+# 4. Запустить полный пайплайн
+python -m src.preprocessing    # feature engineering + сплит
+python -m src.eda              # EDA-графики → report/
+python -m src.baseline         # baseline модель
+python -m src.experiments      # grid-search экспериментов
+python -m src.train            # финальная модель → models/final_model.pkl
+
+# Линтинг
+ruff check src/
 ```
 
+
+## Запуск через Docker
+
+```bash
+# Собрать образ
+docker compose build
+
+# Запустить отдельный этап (пример)
+docker compose run preprocess
+docker compose run train
+
+# Или все этапы последовательно
+docker compose run preprocess && \
+docker compose run eda && \
+docker compose run baseline && \
+docker compose run experiments && \
+docker compose run train
+```
+
+
 ## Данные
-- `data/raw/` — исходные файлы
-- `data/processed/` — предобработанные данные
+
+- `data/raw/black_money_transactions.csv` — исходный датасет (10 000 строк, 14 признаков)
+- `data/processed/` — предобработанные данные: разбивка train/valid/test (70/15/15), сохранена в `.csv` и `.pkl`
+
+Предобработка (`src/preprocessing.py`): извлечение временных признаков из даты, бинарные флаги (`is_illegal`, `is_reported`, `has_tax_haven`), логарифм суммы, группировка редких банков.
 
 
 ## Результаты
-Здесь коротко выпишите результаты.
-| Модель | [Метрика 1] | [Метрика 2] | Примечание |
-|--------|-------------|-------------|------------|
-| Baseline | — | — | |
-| Лучшая модель | — | — | |
+
+| Модель | Val Accuracy | Val F1 (weighted) | Test F1 (weighted) |
+|--------|-------------|-------------------|-------------------|
+| Baseline (LogReg, LabelEnc) | 0.1027 | 0.0742 | 0.0818 |
+| LogisticRegression + OHE | 0.1073 | 0.0704 | 0.0721 |
+| KNN + OHE (best grid) | 0.1160 | 0.1157 | 0.1057 |
+| GradientBoosting + OHE (best grid) | 0.1107 | 0.1083 | 0.1072 |
+| **RandomForest + OHE (best grid)** | **0.1220** | **0.1217** | 0.1063 |
+| RandomForest финальный (train+val) | — | — | **0.0994** |
+
+Все модели работают вблизи случайного угадывания (1/10 = 0.10): числовые признаки не коррелируют с таргетом (|r| < 0.03), что характерно для синтетических данных.
 
 
 ## Отчёт
